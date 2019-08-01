@@ -2,7 +2,10 @@ import { async, ComponentFixture, TestBed, inject, tick, fakeAsync } from '@angu
 import { DebugElement } from '@angular/core';
 import { By } from '@angular/platform-browser';
 
+import { of } from 'rxjs';
+
 import { AlertButtonComponent } from './alert-button.component';
+import { MessageService } from 'src/app/message.service';
 
 describe('AlertButtonComponent', () => {
   // component à tester
@@ -11,10 +14,18 @@ describe('AlertButtonComponent', () => {
   let fixture: ComponentFixture<AlertButtonComponent>;
   // ...
   let de: DebugElement;
+  // retourne l'observable dans la même forme que dans firebase
+  let serviceStub: any;
 
   beforeEach(async(() => {
+
+    serviceStub = {
+      getContent: () => of('You have been warned'),
+    };
+
     TestBed.configureTestingModule({
-      declarations: [ AlertButtonComponent ]
+      declarations: [ AlertButtonComponent ],
+      providers: [ { provide: MessageService, useValue: serviceStub } ]
     })
     // compile le HTML et le CSS
     .compileComponents();
@@ -62,6 +73,24 @@ describe('AlertButtonComponent', () => {
     expect(component.hiddencontent).toBeFalsy();
   });
 
-  <reprendre la video à 6:22>
+  // en async
+  it('should toogle the message boolean asynchronously', fakeAsync(() => {
+    expect(component.hiddencontent).toBeTruthy();
+    // exécute la fonction toogleAsync() (hiddencontent devient vrai après 500 ms)
+    component.toogleAsync();
+    // attend 501 ms avant de continuer
+    tick(501);
+    expect(component.hiddencontent).toBeFalsy();
+  }));
+
+  // vérifie que l'on récupère un contenu, égal à 'You have been warned'
+  it('should have message content defined from an observable', () => {
+    component.content$.subscribe(content => {
+      expect(content).toBeDefined();
+      expect(content).toBe('You have been warned');
+    });
+  });
+
+  <reprendre à 9:35>
 
 });
